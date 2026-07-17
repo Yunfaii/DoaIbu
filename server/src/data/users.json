@@ -51,5 +51,20 @@
     "portfolio": "",
     "education": "",
     "license_number": ""
+  },
+  {
+    "id": 1784292419820,
+    "name": "akbar",
+    "email": "aa@g.com",
+    "password": "123456",
+    "profession": "Perawat",
+    "specialization": "Perawat ICU",
+    "skills": [],
+    "certification": [],
+    "experience": "3 tahun",
+    "location": "Jakarta Pusat",
+    "portfolio": "",
+    "education": "",
+    "license_number": ""
   }
 ]

@@ -74,7 +74,9 @@ export const JobProvider = ({ children }) => {
   // Apply to job
   const applyToJob = async (id) => {
     try {
-      const response = await axios.post(`${API_URL}/apply/${id}`);
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const payload = { userId: user.id };
+      const response = await axios.post(`${API_URL}/apply/${id}`, payload);
       return response.data;
     } catch (err) {
       setError('Failed to apply');
@@ -83,10 +85,9 @@ export const JobProvider = ({ children }) => {
     }
   };
 
-  // ✅ FIX: Get match score dengan userId
+  // Get match score
   const getMatchScore = async (id) => {
     try {
-      // Ambil userId dari localStorage
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       const userId = user.id;
       
@@ -99,6 +100,24 @@ export const JobProvider = ({ children }) => {
     } catch (err) {
       console.error(err);
       return null;
+    }
+  };
+
+  // ✅ NEW: Get applied history
+  const getAppliedHistory = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const userId = user.id;
+      
+      const url = userId 
+        ? `${API_URL}/history?userId=${userId}` 
+        : API_URL + '/history';
+      
+      const response = await axios.get(url);
+      return response.data;
+    } catch (err) {
+      console.error('Failed to fetch applied history:', err);
+      return [];
     }
   };
 
@@ -138,6 +157,7 @@ export const JobProvider = ({ children }) => {
     getJob,
     applyToJob,
     getMatchScore,
+    getAppliedHistory,  // ✅ NEW
     updateFilters,
     clearFilters
   };

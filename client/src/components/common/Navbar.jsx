@@ -28,6 +28,10 @@ function Navbar() {
           
           {user ? (
             <>
+              <Link to="/history" className="nav-link">
+                <History size={18} />
+                <span>Riwayat</span>
+              </Link>
               <Link to="/profile" className="nav-link">
                 <User size={18} />
                 <span>{user.name}</span>

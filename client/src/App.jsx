@@ -9,6 +9,7 @@ import JobDetail from './pages/JobDetail';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import AppliedHistory from './pages/AppliedHistory';  // ✅ NEW
 import ProtectedRoute from './components/common/ProtectedRoute';
 
 function App() {
@@ -35,6 +36,11 @@ function App() {
               <Route path="/profile" element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              } />
+              <Route path="/history" element={        // ✅ NEW
+                <ProtectedRoute>
+                  <AppliedHistory />
                 </ProtectedRoute>
               } />
             </Routes>

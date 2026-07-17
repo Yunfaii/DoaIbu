@@ -4,6 +4,7 @@ const jobController = require('../controllers/jobControllers');
 
 router.get('/', jobController.getAllJobs);
 router.get('/search', jobController.searchJobs);
+router.get('/history', jobController.getAppliedHistory);
 router.get('/:id', jobController.getJobById);
 router.post('/apply/:id', jobController.applyJob);
 router.post('/match/:id', jobController.getMatchScore);
