@@ -3,22 +3,27 @@ const path = require('path');
 
 const usersPath = path.join(__dirname, '../data/users.json');
 
-// Helper function to read users
 const readUsers = () => {
   const data = fs.readFileSync(usersPath, 'utf8');
   return JSON.parse(data);
 };
 
-// Helper function to write users
 const writeUsers = (users) => {
   fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
 };
 
-// GET user profile (default user)
+// GET user profile by ID (from query param)
 exports.getProfile = (req, res) => {
+  const userId = parseInt(req.query.userId);
   const users = readUsers();
-  // Return first user as default profile
-  const user = users[0];
+  
+  // If userId provided, get that user, otherwise get first user
+  let user;
+  if (userId) {
+    user = users.find(u => u.id === userId);
+  } else {
+    user = users[0];
+  }
   
   if (!user) {
     return res.status(404).json({ error: 'User not found' });
@@ -30,11 +35,17 @@ exports.getProfile = (req, res) => {
 
 // UPDATE user profile
 exports.updateProfile = (req, res) => {
-  const { name, email, skills, experience, location, portfolio, education } = req.body;
+  const { userId, name, email, skills, experience, location, portfolio, education } = req.body;
   
   let users = readUsers();
-  // Update first user
-  const userIndex = users.findIndex(u => u.id === 1);
+  
+  // Find user by ID or use first user
+  let userIndex;
+  if (userId) {
+    userIndex = users.findIndex(u => u.id === userId);
+  } else {
+    userIndex = 0; // default to first user
+  }
   
   if (userIndex === -1) {
     return res.status(404).json({ error: 'User not found' });

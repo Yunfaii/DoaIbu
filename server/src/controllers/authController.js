@@ -3,13 +3,11 @@ const path = require('path');
 
 const usersPath = path.join(__dirname, '../data/users.json');
 
-// Helper function to read users
 const readUsers = () => {
   const data = fs.readFileSync(usersPath, 'utf8');
   return JSON.parse(data);
 };
 
-// Helper function to write users
 const writeUsers = (users) => {
   fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
 };
@@ -17,7 +15,6 @@ const writeUsers = (users) => {
 exports.register = (req, res) => {
   const { name, email, password } = req.body;
 
-  // Validate
   if (!name || !email || !password) {
     return res.status(400).json({ error: 'All fields are required' });
   }
@@ -28,12 +25,10 @@ exports.register = (req, res) => {
 
   const users = readUsers();
 
-  // Check if email already exists
   if (users.find(user => user.email === email)) {
     return res.status(400).json({ error: 'Email already registered' });
   }
 
-  // Create new user
   const newUser = {
     id: Date.now(),
     name,
@@ -49,7 +44,6 @@ exports.register = (req, res) => {
   users.push(newUser);
   writeUsers(users);
 
-  // Return user without password
   const { password: _, ...userWithoutPassword } = newUser;
   res.status(201).json({ 
     message: 'Registration successful', 
@@ -71,7 +65,6 @@ exports.login = (req, res) => {
     return res.status(401).json({ error: 'Invalid email or password' });
   }
 
-  // Return user without password
   const { password: _, ...userWithoutPassword } = user;
   res.json({ 
     message: 'Login successful', 
