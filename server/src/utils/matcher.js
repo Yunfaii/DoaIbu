@@ -1,8 +1,10 @@
+// Calculate match score between healthcare professional and job
 exports.calculateMatchScore = (user, job) => {
   let totalScore = 0;
   let maxScore = 0;
 
-  const skillsWeight = 40;
+  // 1. SKILLS MATCH (30% weight)
+  const skillsWeight = 30;
   if (user.skills && job.skills) {
     const matchedSkills = job.skills.filter(jobSkill =>
       user.skills.some(userSkill =>
@@ -16,7 +18,51 @@ exports.calculateMatchScore = (user, job) => {
     maxScore += skillsWeight;
   }
 
-  const expWeight = 30;
+  // 2. CERTIFICATION MATCH (25% weight) - NEW FOR HEALTHCARE
+  const certWeight = 25;
+  if (user.certification && job.certification) {
+    const matchedCerts = job.certification.filter(jobCert =>
+      user.certification.some(userCert =>
+        userCert.toLowerCase() === jobCert.toLowerCase() ||
+        userCert.toLowerCase().includes(jobCert.toLowerCase()) ||
+        jobCert.toLowerCase().includes(userCert.toLowerCase())
+      )
+    );
+    const certScore = (matchedCerts.length / job.certification.length) * certWeight;
+    totalScore += certScore;
+    maxScore += certWeight;
+  } else {
+    // If job requires certification but user has none
+    if (job.certification && job.certification.length > 0) {
+      totalScore += 0;
+      maxScore += certWeight;
+    } else {
+      totalScore += certWeight * 0.5;
+      maxScore += certWeight;
+    }
+  }
+
+  // 3. SPECIALIZATION MATCH (20% weight) - NEW FOR HEALTHCARE
+  const specWeight = 20;
+  if (user.specialization && job.specialization) {
+    if (user.specialization.toLowerCase() === job.specialization.toLowerCase()) {
+      totalScore += specWeight;
+    } else if (
+      user.specialization.toLowerCase().includes(job.specialization.toLowerCase()) ||
+      job.specialization.toLowerCase().includes(user.specialization.toLowerCase())
+    ) {
+      totalScore += specWeight * 0.7;
+    } else {
+      totalScore += specWeight * 0.3;
+    }
+    maxScore += specWeight;
+  } else {
+    totalScore += specWeight * 0.3;
+    maxScore += specWeight;
+  }
+
+  // 4. EXPERIENCE MATCH (15% weight)
+  const expWeight = 15;
   if (user.experience && job.experience) {
     const userYears = parseInt(user.experience) || 0;
     const jobYears = parseInt(job.experience) || 0;
@@ -37,35 +83,23 @@ exports.calculateMatchScore = (user, job) => {
     maxScore += expWeight;
   }
 
-  const locWeight = 20;
+  // 5. LOCATION MATCH (10% weight)
+  const locWeight = 10;
   if (user.location && job.location) {
     if (user.location.toLowerCase() === job.location.toLowerCase()) {
       totalScore += locWeight;
-    } else if (job.location.toLowerCase() === 'remote') {
-      totalScore += locWeight * 0.8;
-    } else if (user.location.toLowerCase().includes('jakarta') && 
-               job.location.toLowerCase().includes('jakarta')) {
-      totalScore += locWeight * 0.7;
+    } else if (user.location.toLowerCase().includes(job.location.toLowerCase()) ||
+               job.location.toLowerCase().includes(user.location.toLowerCase())) {
+      totalScore += locWeight * 0.6;
     } else {
-      totalScore += locWeight * 0.3;
+      totalScore += locWeight * 0.2;
     }
+    maxScore += locWeight;
   } else {
     totalScore += locWeight * 0.5;
+    maxScore += locWeight;
   }
-  maxScore += locWeight;
 
-  const eduWeight = 10;
-  if (user.education && job.description) {
-    const eduKeywords = ['s1', 's2', 'd3', 'd4', 'sarjana', 'master'];
-    const matchedEdu = eduKeywords.some(keyword =>
-      user.education.toLowerCase().includes(keyword) &&
-      job.description.toLowerCase().includes(keyword)
-    );
-    totalScore += matchedEdu ? eduWeight : eduWeight * 0.5;
-  } else {
-    totalScore += eduWeight * 0.5;
-  }
-  maxScore += eduWeight;
-
+  // Calculate final percentage
   return Math.round((totalScore / maxScore) * 100);
 };

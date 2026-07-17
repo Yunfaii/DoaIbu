@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Briefcase, Zap, Shield, Users } from 'lucide-react';
+import { Zap, Shield, Users } from 'lucide-react';
 import Button from '../components/common/Button';
 
 function Home() {
@@ -15,12 +15,12 @@ function Home() {
       >
         <div className="hero-content">
           <h1 className="hero-title">
-            Temukan Pekerjaan <br />
-            <span className="hero-highlight">Impianmu</span> dengan Mudah
+            Dengan <br />
+            <span className="hero-highlight">Jalur Langit</span> diiringi  
+            <span className="hero-highlight"> Doa Ibu</span>, <br /> semoga kamu dapat kerja.
           </h1>
           <p className="hero-subtitle">
-            Jalur Langit membantu kamu menemukan lowongan yang sesuai dengan skill dan pengalamanmu, 
-            serta mengirimkan lamaran secara otomatis ke recruiter.
+            Jalur Langit dapat membantu kamu sebagai lulusan jurusan kesehatan mencari peluang pekerjaan yang cocok.
           </p>
           <div className="hero-actions">
             <Link to="/jobs">
@@ -37,7 +37,11 @@ function Home() {
         </div>
         <div className="hero-image">
           <div className="hero-illustration">
-            <Briefcase size={120} color="#7C3AED" />
+            <img 
+              src="/src/assets/logo.png" 
+              alt="Jalur Langit Logo"
+              style={{ width: '120px', height: '120px', objectFit: 'contain' }}
+            />
           </div>
         </div>
       </motion.section>
@@ -54,7 +58,7 @@ function Home() {
           >
             <div className="feature-icon"><Zap size={32} /></div>
             <h3>Smart Matching</h3>
-            <p>Kami cocokkan lowongan dengan skill dan pengalamanmu secara otomatis.</p>
+            <p>Kami cocokkan lowongan dengan spesialisasi dan pengalaman kamu.</p>
           </motion.div>
           <motion.div 
             className="feature-card"
@@ -64,7 +68,7 @@ function Home() {
           >
             <div className="feature-icon"><Shield size={32} /></div>
             <h3>Auto-Apply</h3>
-            <p>Lamaran dikirim langsung ke email recruiter tanpa perantara.</p>
+            <p>Lamaran dikirim langsung ke email rumah sakit tanpa perantara.</p>
           </motion.div>
           <motion.div 
             className="feature-card"
@@ -74,7 +78,7 @@ function Home() {
           >
             <div className="feature-icon"><Users size={32} /></div>
             <h3>Terpercaya</h3>
-            <p>Lowongan dari sumber terpercaya yang dipublikasikan di media sosial.</p>
+            <p>Lowongan dari sumber terpercaya yang bisa bikin kamu cepat kerja.</p>
           </motion.div>
         </div>
       </section>

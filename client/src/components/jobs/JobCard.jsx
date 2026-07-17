@@ -1,9 +1,15 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MapPin, Briefcase, Calendar } from 'lucide-react';
+import { MapPin, Briefcase, Calendar, Building2 } from 'lucide-react';
 import { formatDate, getMatchColor, getMatchLabel } from '../../utils/helpers';
 
 function JobCard({ job, matchScore }) {
+  // Fallback logo if image not found
+  const handleImageError = (e) => {
+    e.target.style.display = 'none';
+    e.target.nextElementSibling.style.display = 'flex';
+  };
+
   return (
     <motion.div 
       className="job-card"
@@ -15,10 +21,35 @@ function JobCard({ job, matchScore }) {
       <Link to={`/jobs/${job.id}`} className="job-card-link">
         <div className="job-card-header">
           <div className="job-card-company">
-            <span className="job-card-logo">{job.company_logo || '🏢'}</span>
+            {/* Hospital Logo */}
+            <div className="job-card-logo-wrapper">
+              {job.hospital_logo ? (
+                <>
+                  <img 
+                    src={job.hospital_logo} 
+                    alt={job.hospital}
+                    className="job-card-logo-img"
+                    onError={handleImageError}
+                  />
+                  <div className="job-card-logo-fallback" style={{ display: 'none' }}>
+                    🏥
+                  </div>
+                </>
+              ) : (
+                <div className="job-card-logo-fallback">
+                  🏥
+                </div>
+              )}
+            </div>
             <div>
               <h3 className="job-card-title">{job.title}</h3>
-              <p className="job-card-company-name">{job.company}</p>
+              <p className="job-card-company-name">{job.hospital}</p>
+              {job.hospital_type && (
+                <span className="job-card-hospital-type">
+                  <Building2 size={12} />
+                  {job.hospital_type}
+                </span>
+              )}
             </div>
           </div>
           {matchScore !== undefined && (

@@ -1,47 +1,40 @@
 [
   {
     "id": 1,
-    "name": "User",
-    "email": "user@email.com",
+    "name": "Dr. Francent Jienarta",
+    "email": "dr.akbar@email.com",
     "password": "password123",
+    "profession": "Apoteker",
+    "specialization": "Saraf",
     "skills": [
-      "React",
-      "JavaScript",
-      "Node.js",
-      "CSS"
+      "Dokter Umum"
     ],
-    "experience": "2 years",
-    "location": "Jakarta",
-    "portfolio": "https://portfolio.com",
-    "education": "S1 Computer Science"
-  },
-  {
-    "id": 2,
-    "name": "Test User",
-    "email": "test@email.com",
-    "password": "test123",
-    "skills": [
-      "Python",
-      "Machine Learning",
-      "SQL"
+    "certification": [
+      "MANTAP"
     ],
-    "experience": "1 year",
-    "location": "Bandung",
-    "portfolio": "https://testportfolio.com",
-    "education": "S1 Mathematics"
-  },
-  {
-    "id": 1784280437361,
-    "name": "fran",
-    "email": "fran@enak.com",
-    "password": "123456",
-    "skills": [
-      "JavaScript",
-      "TypeScript"
-    ],
-    "experience": "<1 year",
+    "experience": "5 tahun",
     "location": "Tangerang",
-    "portfolio": "",
-    "education": "High School"
+    "portfolio": "https://youtube.com",
+    "education": "S1 Radiologi",
+    "license_number": "STR-67"
+  },
+  {
+    "id": 1784285045709,
+    "name": "William",
+    "email": "william@gmail.com",
+    "password": "123456",
+    "profession": "Dokter",
+    "specialization": "Mata",
+    "skills": [
+      "Umum"
+    ],
+    "certification": [
+      "IYA"
+    ],
+    "experience": "3 tahun",
+    "location": "Remote",
+    "portfolio": "https://port.com",
+    "education": "S1 Gizi",
+    "license_number": "STR-124"
   }
 ]

@@ -12,62 +12,81 @@ const writeUsers = (users) => {
   fs.writeFileSync(usersPath, JSON.stringify(users, null, 2));
 };
 
-// GET user profile by ID (from query param)
 exports.getProfile = (req, res) => {
   const userId = parseInt(req.query.userId);
-  const users = readUsers();
+  console.log('GET Profile - userId:', userId);
   
-  // If userId provided, get that user, otherwise get first user
+  const users = readUsers();
+  console.log('Total users:', users.length);
+  
   let user;
   if (userId) {
     user = users.find(u => u.id === userId);
+    console.log('Mencari user dengan ID:', userId);
   } else {
     user = users[0];
+    console.log('Tidak ada userId, pakai user pertama');
   }
   
   if (!user) {
+    console.log('User tidak ditemukan');
     return res.status(404).json({ error: 'User not found' });
   }
 
+  console.log('User ditemukan:', user.name);
   const { password, ...profile } = user;
   res.json(profile);
 };
 
-// UPDATE user profile
 exports.updateProfile = (req, res) => {
-  const { userId, name, email, skills, experience, location, portfolio, education } = req.body;
+  console.log('UPDATE Profile - Request body:', req.body);
+  
+  const { userId, name, email, skills, experience, location, portfolio, education, profession, specialization, certification, license_number } = req.body;
   
   let users = readUsers();
+  console.log('Total users:', users.length);
   
-  // Find user by ID or use first user
   let userIndex;
   if (userId) {
-    userIndex = users.findIndex(u => u.id === userId);
+    userIndex = users.findIndex(u => u.id === parseInt(userId));
+    console.log('Mencari user index dengan ID:', userId);
   } else {
-    userIndex = 0; // default to first user
+    userIndex = 0;
+    console.log('Tidak ada userId, pakai index 0');
   }
   
+  console.log('User index:', userIndex);
+  
   if (userIndex === -1) {
+    console.log('User tidak ditemukan');
     return res.status(404).json({ error: 'User not found' });
   }
 
-  // Update user fields
-  users[userIndex] = {
+  console.log('User ditemukan:', users[userIndex].name);
+
+  const updatedUser = {
     ...users[userIndex],
     name: name || users[userIndex].name,
     email: email || users[userIndex].email,
-    skills: skills || users[userIndex].skills,
-    experience: experience || users[userIndex].experience,
-    location: location || users[userIndex].location,
-    portfolio: portfolio || users[userIndex].portfolio,
-    education: education || users[userIndex].education
+    profession: profession || users[userIndex].profession || '',
+    specialization: specialization || users[userIndex].specialization || '',
+    skills: skills || users[userIndex].skills || [],
+    certification: certification || users[userIndex].certification || [],
+    experience: experience || users[userIndex].experience || '',
+    location: location || users[userIndex].location || '',
+    education: education || users[userIndex].education || '',
+    license_number: license_number || users[userIndex].license_number || '',
+    portfolio: portfolio || users[userIndex].portfolio || ''
   };
 
+  users[userIndex] = updatedUser;
   writeUsers(users);
 
-  const { password, ...updatedProfile } = users[userIndex];
+  console.log('Profile updated untuk:', updatedUser.name);
+  
+  const { password, ...updatedProfile } = updatedUser;
   res.json({ 
-    message: 'Profile updated successfully!', 
+    message: 'Profile updated successfully', 
     profile: updatedProfile 
   });
 };

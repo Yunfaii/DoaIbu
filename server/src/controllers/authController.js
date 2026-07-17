@@ -34,11 +34,15 @@ exports.register = (req, res) => {
     name,
     email,
     password,
+    profession: '',
+    specialization: '',
     skills: [],
-    experience: '0 years',
+    certification: [],
+    experience: '',
     location: '',
     portfolio: '',
-    education: ''
+    education: '',
+    license_number: ''
   };
 
   users.push(newUser);

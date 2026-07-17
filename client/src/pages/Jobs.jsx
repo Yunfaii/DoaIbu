@@ -14,8 +14,8 @@ function JobsContent() {
   return (
     <div className="jobs-page">
       <div className="jobs-header">
-        <h1>💼 Lowongan Kerja</h1>
-        <p>Temukan pekerjaan yang sesuai dengan skill dan pengalamanmu</p>
+        <h1>Lowongan Kerja</h1>
+        <p>Temukan pekerjaan yang sesuai dengan spesialisasi dan pengalaman kamu</p>
       </div>
 
       <JobFilter />

@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   ArrowLeft, MapPin, Briefcase, Calendar, 
-  Mail, Building, Tag, Award, CheckCircle, XCircle
+  Mail, Building, Tag, Award, CheckCircle, XCircle, Stethoscope
 } from 'lucide-react';
 import { useJobs } from '../context/JobContext';
 import { useAuth } from '../context/AuthContext';
@@ -29,12 +29,11 @@ function JobDetail() {
     const fetchData = async () => {
       const jobData = await getJob(parseInt(id));
       if (!jobData) {
-        setError('Job not found');
+        setError('Lowongan tidak ditemukan');
         return;
       }
       setJob(jobData);
 
-      // Get match score
       const match = await getMatchScore(parseInt(id));
       if (match) {
         setMatchData(match);
@@ -62,7 +61,7 @@ function JobDetail() {
     return (
       <div className="job-detail-loading">
         <div className="spinner"></div>
-        <p>Loading job details...</p>
+        <p>Memuat detail lowongan...</p>
       </div>
     );
   }
@@ -70,10 +69,10 @@ function JobDetail() {
   if (error || !job) {
     return (
       <div className="job-detail-error">
-        <h2>😕 Job Not Found</h2>
-        <p>The job you're looking for doesn't exist or has been removed.</p>
+        <h2>Lowongan Tidak Ditemukan</h2>
+        <p>Lowongan yang Anda cari tidak tersedia atau telah dihapus.</p>
         <Link to="/jobs">
-          <Button variant="primary">Back to Jobs</Button>
+          <Button variant="primary">Kembali ke Lowongan</Button>
         </Link>
       </div>
     );
@@ -88,7 +87,7 @@ function JobDetail() {
     >
       <Link to="/jobs" className="job-detail-back">
         <ArrowLeft size={20} />
-        Back to Jobs
+        Kembali ke Lowongan
       </Link>
 
       <div className="job-detail-grid">
@@ -97,11 +96,22 @@ function JobDetail() {
           <div className="job-detail-card">
             <div className="job-detail-header">
               <div className="job-detail-company-logo">
-                {job.company_logo || '🏢'}
+                {job.hospital_logo ? (
+                  <img 
+                    src={job.hospital_logo} 
+                    alt={job.hospital}
+                    style={{ width: '72px', height: '72px', objectFit: 'cover', borderRadius: '12px' }}
+                  />
+                ) : (
+                  <Stethoscope size={36} color="#7C3AED" />
+                )}
               </div>
               <div className="job-detail-header-info">
                 <h1>{job.title}</h1>
-                <p className="job-detail-company">{job.company}</p>
+                <p className="job-detail-company">{job.hospital}</p>
+                {job.hospital_type && (
+                  <span className="job-detail-hospital-type">{job.hospital_type}</span>
+                )}
               </div>
             </div>
 
@@ -116,12 +126,18 @@ function JobDetail() {
               </div>
               <div className="meta-item">
                 <Calendar size={18} />
-                <span>Posted: {formatDate(job.posted)}</span>
+                <span>Diposting: {formatDate(job.posted)}</span>
               </div>
               {job.deadline && (
                 <div className="meta-item">
                   <Calendar size={18} />
-                  <span>Deadline: {formatDate(job.deadline)}</span>
+                  <span>Batas Pendaftaran: {formatDate(job.deadline)}</span>
+                </div>
+              )}
+              {job.salary && (
+                <div className="meta-item">
+                  <Tag size={18} />
+                  <span>{job.salary}</span>
                 </div>
               )}
             </div>
@@ -144,19 +160,45 @@ function JobDetail() {
             </div>
 
             <div className="job-detail-section">
+              <h3>Sertifikasi yang Dibutuhkan</h3>
+              <div className="skills-list">
+                {job.certification && job.certification.map((cert, index) => (
+                  <span key={index} className="skill-tag certification-tag">
+                    <Award size={14} />
+                    {cert}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="job-detail-section">
               <h3>Pengalaman</h3>
               <p>{job.experience}</p>
             </div>
+
+            {job.facilities && job.facilities.length > 0 && (
+              <div className="job-detail-section">
+                <h3>Fasilitas</h3>
+                <ul className="facilities-list">
+                  {job.facilities.map((facility, index) => (
+                    <li key={index}>
+                      <CheckCircle size={16} color="#7C3AED" />
+                      {facility}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             <div className="job-detail-section">
               <h3>Informasi Kontak</h3>
               <div className="contact-info">
                 <Mail size={18} />
-                <span>{job.email || 'Not provided'}</span>
+                <span>{job.email || 'Tidak tersedia'}</span>
               </div>
               <div className="contact-info">
                 <Building size={18} />
-                <span>{job.company}</span>
+                <span>{job.hospital}</span>
               </div>
             </div>
           </div>
@@ -176,39 +218,47 @@ function JobDetail() {
               disabled={isApplying}
               className="apply-btn-full"
             >
-              {isApplying ? 'Mengirim Lamaran...' : 'Apply Now'}
+              {isApplying ? 'Mengirim Lamaran...' : 'Lamar Sekarang'}
             </Button>
             <p className="apply-info">
               <CheckCircle size={16} color="#10B981" />
-              Lamaran akan dikirim langsung ke email recruiter
+              Lamaran akan dikirim langsung ke email rekruter rumah sakit
             </p>
           </div>
 
           <div className="job-detail-profile">
-            <h4>Profil Anda</h4>
+            <h4>Profil Tenaga Kesehatan Anda</h4>
             <div className="profile-snapshot">
               <div className="profile-item">
                 <span className="profile-label">Nama</span>
-                <span>{user?.name}</span>
+                <span>{user?.name || 'Belum diisi'}</span>
               </div>
               <div className="profile-item">
                 <span className="profile-label">Email</span>
-                <span>{user?.email}</span>
+                <span>{user?.email || 'Belum diisi'}</span>
               </div>
               <div className="profile-item">
-                <span className="profile-label">Skills</span>
-                <span>{user?.skills?.join(', ') || 'Not set'}</span>
+                <span className="profile-label">Profesi</span>
+                <span>{user?.profession || 'Belum diisi'}</span>
+              </div>
+              <div className="profile-item">
+                <span className="profile-label">Spesialisasi</span>
+                <span>{user?.specialization || 'Belum diisi'}</span>
+              </div>
+              <div className="profile-item">
+                <span className="profile-label">Sertifikasi</span>
+                <span>{user?.certification?.join(', ') || 'Belum diisi'}</span>
               </div>
               <div className="profile-item">
                 <span className="profile-label">Pengalaman</span>
-                <span>{user?.experience || 'Not set'}</span>
+                <span>{user?.experience || 'Belum diisi'}</span>
               </div>
               <div className="profile-item">
                 <span className="profile-label">Lokasi</span>
-                <span>{user?.location || 'Not set'}</span>
+                <span>{user?.location || 'Belum diisi'}</span>
               </div>
               <Link to="/profile" className="profile-edit-link">
-                Edit Profile →
+                Edit Profil
               </Link>
             </div>
           </div>
