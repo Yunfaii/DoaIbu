@@ -25,38 +25,77 @@ app.use('/api/profile', profileRoutes);
 app.get('/', (req, res) => {
   res.json({ 
     message: 'Jalur Langit API is running',
+    version: '1.0.0',
+    status: 'online',
     endpoints: {
-      jobs: '/api/jobs',
-      jobDetail: '/api/jobs/:id',
-      search: '/api/jobs/search?q=',
-      apply: '/api/jobs/apply/:id',
-      match: '/api/jobs/match/:id',
-      login: '/api/auth/login',
-      register: '/api/auth/register',
-      profile: '/api/profile'
+      auth: {
+        login: 'POST /api/auth/login',
+        register: 'POST /api/auth/register'
+      },
+      jobs: {
+        all: 'GET /api/jobs',
+        detail: 'GET /api/jobs/:id',
+        search: 'GET /api/jobs/search?q=',
+        apply: 'POST /api/jobs/apply/:id',
+        match: 'POST /api/jobs/match/:id'
+      },
+      profile: {
+        get: 'GET /api/profile',
+        update: 'PUT /api/profile'
+      }
     }
   });
 });
 
 // Start server
 app.listen(port, () => {
-  console.log(`\n🚀 Jalur Langit Server running on http://localhost:${port}`);
-  console.log(`📋 API Endpoints:`);
-  console.log(`   ────────────────────────────────`);
-  console.log(`   📌 JOBS`);
-  console.log(`   ├─ GET    /api/jobs              - Get all jobs`);
-  console.log(`   ├─ GET    /api/jobs/:id          - Get job by ID`);
-  console.log(`   ├─ GET    /api/jobs/search?q=    - Search jobs`);
-  console.log(`   ├─ POST   /api/jobs/apply/:id    - Apply to job`);
-  console.log(`   └─ POST   /api/jobs/match/:id    - Get match score`);
-  console.log(`   ────────────────────────────────`);
-  console.log(`   🔐 AUTH`);
-  console.log(`   ├─ POST   /api/auth/login        - Login user`);
-  console.log(`   └─ POST   /api/auth/register     - Register user`);
-  console.log(`   ────────────────────────────────`);
-  console.log(`   👤 PROFILE`);
-  console.log(`   ├─ GET    /api/profile           - Get user profile`);
-  console.log(`   └─ PUT    /api/profile           - Update user profile`);
-  console.log(`   ────────────────────────────────`);
-  console.log(`✨ Server ready! Press Ctrl+C to stop\n`);
+  console.log('\n' + '='.repeat(70));
+  console.log('JALUR LANGIT - SMART JOB DISCOVERY');
+  console.log('='.repeat(70));
+  console.log(`Server running on:  http://localhost:${port}`);
+  console.log(`Environment:        ${process.env.NODE_ENV || 'development'}`);
+  console.log(`Started at:         ${new Date().toLocaleString()}`);
+  console.log('='.repeat(70));
+  
+  console.log('\nAPI ENDPOINTS:');
+  console.log('─'.repeat(70));
+  
+  console.log('\nJOBS');
+  console.log('   ├─ GET    /api/jobs              - Get all jobs');
+  console.log('   ├─ GET    /api/jobs/:id          - Get job by ID');
+  console.log('   ├─ GET    /api/jobs/search?q=    - Search jobs (title, company, skills)');
+  console.log('   ├─ GET    /api/jobs/search?location=  - Filter by location');
+  console.log('   ├─ GET    /api/jobs/search?type=     - Filter by type');
+  console.log('   ├─ POST   /api/jobs/apply/:id    - Apply to job (simulation)');
+  console.log('   └─ POST   /api/jobs/match/:id    - Get match score with user profile');
+  
+  console.log('\nAUTHENTICATION');
+  console.log('   ├─ POST   /api/auth/login        - Login user');
+  console.log('   └─ POST   /api/auth/register     - Register new user');
+  
+  console.log('\nPROFILE');
+  console.log('   ├─ GET    /api/profile           - Get user profile');
+  console.log('   └─ PUT    /api/profile           - Update user profile');
+  
+  console.log('\nSYSTEM INFO:');
+  console.log('   ├─ Jobs:    10 lowongan dummy');
+  console.log('   ├─ Users:   2 akun dummy');
+  console.log('   ├─ Skills:  5+ skill categories');
+  console.log('   └─ Match:   Smart matching engine aktif');
+  
+  console.log('\nTEST CREDENTIALS:');
+  console.log('   ├─ Email:    user@email.com');
+  console.log('   └─ Password: password123');
+  console.log('   ──────────────────────────────────');
+  console.log('   ├─ Email:    test@email.com');
+  console.log('   └─ Password: test123');
+  
+  console.log('\nCLIENT:');
+  console.log(`   ├─ URL:      http://localhost:5173`);
+  console.log('   ├─ Framework: React.js + Vite');
+  console.log('   └─ Features:  Login, Register, Jobs, Match, Apply, Profile');
+  
+  console.log('\n' + '='.repeat(70));
+  console.log('Server ready! Press Ctrl+C to stop');
+  console.log('='.repeat(70) + '\n');
 });
