@@ -4,6 +4,7 @@ const { calculateMatchScore } = require('../utils/matcher');
 
 const jobsPath = path.join(__dirname, '../data/jobs.json');
 const usersPath = path.join(__dirname, '../data/users.json');
+const applicationsPath = path.join(__dirname, '../data/applications.json');
 
 // Helper functions
 function getJobs() {
@@ -14,6 +15,19 @@ function getJobs() {
 function getUsers() {
   const data = fs.readFileSync(usersPath, 'utf8');
   return JSON.parse(data);
+}
+
+function getApplications() {
+  try {
+    const data = fs.readFileSync(applicationsPath, 'utf8');
+    return JSON.parse(data);
+  } catch (err) {
+    return [];
+  }
+}
+
+function writeApplications(applications) {
+  fs.writeFileSync(applicationsPath, JSON.stringify(applications, null, 2));
 }
 
 // ============= CONTROLLERS =============
@@ -70,12 +84,29 @@ exports.searchJobs = function(req, res) {
 
 exports.applyJob = function(req, res) {
   const id = parseInt(req.params.id);
+  const userId = req.body.userId ? parseInt(req.body.userId) : null;
   const jobs = getJobs();
   const job = jobs.find(function(j) { return j.id === id; });
   
   if (!job) {
     return res.status(404).json({ error: 'Job not found' });
   }
+  
+  const applications = getApplications();
+  const newApplication = {
+    id: Date.now(),
+    job_id: job.id,
+    user_id: userId || 1,
+    job_title: job.title,
+    hospital: job.hospital,
+    location: job.location,
+    status: 'Applied',
+    applied_at: new Date().toISOString(),
+    email_sent: true
+  };
+  
+  applications.push(newApplication);
+  writeApplications(applications);
   
   setTimeout(function() {
     res.json({
@@ -85,10 +116,29 @@ exports.applyJob = function(req, res) {
         hospital: job.hospital,
         email: job.email,
         status: 'Email sent to recruiter',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        application_id: newApplication.id
       }
     });
   }, 500);
+};
+
+exports.getAppliedHistory = function(req, res) {
+  const userId = req.query.userId ? parseInt(req.query.userId) : null;
+  const applications = getApplications();
+  
+  let userApps = applications;
+  if (userId) {
+    userApps = applications.filter(function(app) {
+      return app.user_id === userId;
+    });
+  }
+  
+  userApps.sort(function(a, b) {
+    return new Date(b.applied_at) - new Date(a.applied_at);
+  });
+  
+  res.json(userApps);
 };
 
 exports.getMatchScore = function(req, res) {
@@ -123,7 +173,6 @@ exports.getMatchScore = function(req, res) {
   const score = calculateMatchScore(user, job);
   console.log('   Match Score:', score);
   
-  // Calculate match details for display
   const matchDetails = {
     professionMatch: 0,
     specializationMatch: 0,
@@ -131,7 +180,6 @@ exports.getMatchScore = function(req, res) {
     locationMatch: 0
   };
 
-  // Profession match detail
   if (user.profession && job.category) {
     const userProf = user.profession.toLowerCase().trim();
     const jobCat = job.category.toLowerCase().trim();
@@ -148,7 +196,6 @@ exports.getMatchScore = function(req, res) {
     matchDetails.professionMatch = 30;
   }
 
-  // Specialization match detail
   if (user.specialization && job.specialization) {
     const userSpec = user.specialization.toLowerCase().trim();
     const jobSpec = job.specialization.toLowerCase().trim();
@@ -165,7 +212,6 @@ exports.getMatchScore = function(req, res) {
     matchDetails.specializationMatch = 30;
   }
 
-  // Experience match detail
   if (user.experience && job.experience) {
     const userYears = parseExperience(user.experience);
     const jobYears = parseExperience(job.experience);
@@ -184,7 +230,6 @@ exports.getMatchScore = function(req, res) {
     matchDetails.experienceMatch = 30;
   }
 
-  // Location match detail
   if (user.location && job.location) {
     const userLoc = user.location.toLowerCase().trim();
     const jobLoc = job.location.toLowerCase().trim();
@@ -210,12 +255,9 @@ exports.getMatchScore = function(req, res) {
   });
 };
 
-// Helper function to parse experience string to years
 function parseExperience(expStr) {
   if (!expStr) return 0;
-  
   const str = expStr.toLowerCase().trim();
-  
   if (str.includes('kurang dari 1 tahun') || str.includes('<1')) return 0.5;
   if (str.includes('1 tahun') || str.includes('1 year')) return 1;
   if (str.includes('2 tahun') || str.includes('2 years')) return 2;
@@ -223,16 +265,13 @@ function parseExperience(expStr) {
   if (str.includes('4 tahun') || str.includes('4 years')) return 4;
   if (str.includes('5 tahun') || str.includes('5 years')) return 5;
   if (str.includes('lebih dari 5 tahun') || str.includes('>5')) return 6;
-  
   const rangeMatch = str.match(/(\d+)\s*-\s*(\d+)/);
   if (rangeMatch) {
     return (parseInt(rangeMatch[1]) + parseInt(rangeMatch[2])) / 2;
   }
-  
   const numbers = str.match(/\d+/);
   if (numbers) {
     return parseInt(numbers[0]);
   }
-  
   return 0;
 }

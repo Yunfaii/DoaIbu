@@ -1886,3 +1886,157 @@ body {
     gap: 0.75rem;
   }
 }
+
+/* ===== APPLIED HISTORY ===== */
+.applied-history-page {
+  padding: 1rem 0;
+}
+
+.applied-history {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.applied-history-header {
+  margin-bottom: 2rem;
+}
+
+.applied-history-header h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.25rem;
+}
+
+.applied-history-header p {
+  color: #6B7280;
+}
+
+.applied-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.applied-history-item {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  transition: all 0.2s;
+}
+
+.applied-history-item:hover {
+  border-color: #7C3AED;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+
+.applied-item-status {
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status-badge.applied {
+  background: #D1FAE5;
+  color: #065F46;
+}
+
+.applied-item-content {
+  flex: 1;
+}
+
+.applied-item-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.applied-item-meta {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #6B7280;
+  font-size: 0.9rem;
+}
+
+.applied-item-actions .view-job-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #7C3AED;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: gap 0.2s;
+}
+
+.applied-item-actions .view-job-link:hover {
+  gap: 8px;
+  text-decoration: underline;
+}
+
+/* ===== EMPTY STATE ===== */
+.applied-history-empty {
+  text-align: center;
+  padding: 4rem 1rem;
+}
+
+.applied-history-empty h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 1rem 0 0.5rem;
+}
+
+.applied-history-empty p {
+  color: #6B7280;
+  margin-bottom: 1.5rem;
+}
+
+/* ===== LOADING ===== */
+.applied-history-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  color: #6B7280;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .applied-history-item {
+    flex-direction: column;
+    padding: 1rem;
+  }
+  
+  .applied-item-status {
+    width: 100%;
+  }
+  
+  .applied-item-meta {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
