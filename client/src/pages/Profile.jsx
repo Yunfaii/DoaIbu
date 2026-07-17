@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { 
   User, Mail, Briefcase, MapPin, Code, 
   GraduationCap, Link as LinkIcon, Save, 
-  Loader, CheckCircle, AlertCircle, Camera, Edit2
+  Loader, CheckCircle, AlertCircle, Camera, Edit2, Award, Stethoscope
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Button from '../components/common/Button';
@@ -23,60 +23,98 @@ function Profile() {
   const [success, setSuccess] = useState('');
   const [isEditing, setIsEditing] = useState(false);
 
-  // Dropdown options
+  const professionOptions = [
+    'Dokter',
+    'Dokter Spesialis',
+    'Perawat',
+    'Bidan',
+    'Apoteker',
+    'Analis Kesehatan',
+    'Tenaga Laboratorium Medis',
+    'Ahli Gizi',
+    'Fisioterapis',
+    'Radiografer',
+    'Tenaga Kesehatan Masyarakat'
+  ];
+
+  const specializationOptions = [
+    'Dokter Umum',
+    'Dokter Gigi',
+    'Dokter Anak',
+    'Dokter Kandungan',
+    'Dokter Bedah',
+    'Dokter Kulit',
+    'Dokter Jantung',
+    'Dokter Saraf',
+    'Dokter Mata',
+    'Dokter THT',
+    'Perawat ICU',
+    'Perawat Bedah',
+    'Perawat Anak',
+    'Bidan',
+    'Apoteker Klinis',
+    'Analis Kesehatan',
+    'Ahli Gizi Klinis',
+    'Fisioterapis',
+    'Radiografer'
+  ];
+
   const experienceOptions = [
-    '<1 year',
-    '1 year',
-    '2 years',
-    '3 years',
-    '4 years',
-    '5+ years'
+    'Kurang dari 1 tahun',
+    '1 tahun',
+    '2 tahun',
+    '3 tahun',
+    '4 tahun',
+    '5 tahun',
+    'Lebih dari 5 tahun'
   ];
 
   const locationOptions = [
-    'Jakarta',
+    'Jakarta Pusat',
+    'Jakarta Selatan',
+    'Jakarta Timur',
+    'Jakarta Barat',
+    'Jakarta Utara',
     'Bandung',
     'Yogyakarta',
     'Surabaya',
     'Bekasi',
     'Tangerang',
-    'Remote',
-    'Other'
+    'Remote'
   ];
 
   const educationOptions = [
-    'S1 Computer Science',
-    'S1 Information Systems',
-    'S1 Mathematics',
-    'S1 Teknik Mesin',
-    'S1 Teknik Elektro',
-    'S1 Teknik Informatika',
-    'S1 Sistem Informasi',
-    'S1 Manajemen',
-    'S1 Ekonomi',
-    'S2 Computer Science',
-    'S2 Business Administration',
-    'D3 Computer Science',
-    'D3 Information Technology',
-    'High School',
-    'Other'
+    'S1 Kedokteran',
+    'S1 Keperawatan',
+    'D3 Kebidanan',
+    'S1 Farmasi',
+    'S1 Kesehatan Masyarakat',
+    'S1 Gizi',
+    'S1 Fisioterapi',
+    'S1 Radiologi',
+    'D3 Analis Kesehatan',
+    'S1 Teknik Medis',
+    'S2 Kedokteran Spesialis',
+    'S2 Kesehatan Masyarakat'
   ];
 
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    profession: '',
+    specialization: '',
     skills: '',
+    certification: '',
     experience: '',
     location: '',
-    portfolio: '',
-    education: ''
+    education: '',
+    license_number: '',
+    portfolio: ''
   });
 
-  // Fetch profile
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        // Send user ID if available
         const url = user?.id ? `${API_URL}?userId=${user.id}` : API_URL;
         const response = await axios.get(url);
         const data = response.data;
@@ -84,14 +122,18 @@ function Profile() {
         setFormData({
           name: data.name || '',
           email: data.email || '',
+          profession: data.profession || '',
+          specialization: data.specialization || '',
           skills: data.skills ? data.skills.join(', ') : '',
+          certification: data.certification ? data.certification.join(', ') : '',
           experience: data.experience || '',
           location: data.location || '',
-          portfolio: data.portfolio || '',
-          education: data.education || ''
+          education: data.education || '',
+          license_number: data.license_number || '',
+          portfolio: data.portfolio || ''
         });
       } catch (err) {
-        setError('Failed to load profile');
+        setError('Gagal memuat profil');
         console.error(err);
       } finally {
         setLoading(false);
@@ -113,26 +155,26 @@ function Profile() {
 
     try {
       const payload = {
-        userId: user?.id, // Send user ID
+        userId: user?.id,
         ...formData,
-        skills: formData.skills.split(',').map(s => s.trim()).filter(s => s)
+        skills: formData.skills.split(',').map(s => s.trim()).filter(s => s),
+        certification: formData.certification.split(',').map(s => s.trim()).filter(s => s)
       };
       
       const response = await axios.put(API_URL, payload);
       setProfile(response.data.profile);
-      setSuccess('Profile updated successfully!');
+      setSuccess('Profil berhasil diperbarui');
       setIsEditing(false);
       
-      // Update auth context with new user data
       const updatedUser = { 
         ...user, 
         ...payload,
-        id: user?.id // Preserve user ID
+        id: user?.id
       };
       localStorage.setItem('user', JSON.stringify(updatedUser));
       
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to update profile');
+      setError(err.response?.data?.error || 'Gagal memperbarui profil');
     } finally {
       setSaving(false);
     }
@@ -143,11 +185,15 @@ function Profile() {
     setFormData({
       name: profile?.name || '',
       email: profile?.email || '',
+      profession: profile?.profession || '',
+      specialization: profile?.specialization || '',
       skills: profile?.skills ? profile.skills.join(', ') : '',
+      certification: profile?.certification ? profile.certification.join(', ') : '',
       experience: profile?.experience || '',
       location: profile?.location || '',
-      portfolio: profile?.portfolio || '',
-      education: profile?.education || ''
+      education: profile?.education || '',
+      license_number: profile?.license_number || '',
+      portfolio: profile?.portfolio || ''
     });
     setError('');
     setSuccess('');
@@ -162,7 +208,7 @@ function Profile() {
     return (
       <div className="profile-loading">
         <div className="spinner"></div>
-        <p>Loading profile...</p>
+        <p>Memuat profil...</p>
       </div>
     );
   }
@@ -175,51 +221,60 @@ function Profile() {
       transition={{ duration: 0.4 }}
     >
       <div className="profile-header">
-        <h1>👤 Profil Saya</h1>
-        <p>Kelola informasi pribadi dan preferensi pekerjaanmu</p>
+        <h1>Profil Tenaga Kesehatan</h1>
+        <p>Kelola informasi pribadi dan kualifikasi kesehatan Anda</p>
       </div>
 
       <div className="profile-grid">
-        {/* Left Column - Profile Card */}
         <div className="profile-card">
           <div className="profile-avatar">
             <div className="avatar-circle">
               <span className="avatar-letter">
-                {profile?.name?.charAt(0) || 'U'}
+                {profile?.name?.charAt(0) || 'T'}
               </span>
             </div>
             <button className="avatar-edit-btn">
               <Camera size={16} />
             </button>
           </div>
-          <h2 className="profile-name">{profile?.name || 'User'}</h2>
+          <h2 className="profile-name">{profile?.name || 'Tenaga Kesehatan'}</h2>
           <p className="profile-email">{profile?.email}</p>
+          {profile?.profession && (
+            <p className="profile-profession">
+              <Stethoscope size={16} />
+              {profile.profession}
+            </p>
+          )}
           
           <div className="profile-stats">
             <div className="stat-item">
               <span className="stat-number">{profile?.skills?.length || 0}</span>
-              <span className="stat-label">Skills</span>
+              <span className="stat-label">Keahlian</span>
+            </div>
+            <div className="stat-divider"></div>
+            <div className="stat-item">
+              <span className="stat-number">{profile?.certification?.length || 0}</span>
+              <span className="stat-label">Sertifikasi</span>
             </div>
             <div className="stat-divider"></div>
             <div className="stat-item">
               <span className="stat-number">{profile?.experience || '0'}</span>
-              <span className="stat-label">Experience</span>
+              <span className="stat-label">Pengalaman</span>
             </div>
           </div>
 
           <button onClick={handleLogout} className="profile-logout-btn">
-            Logout
+            Keluar
           </button>
         </div>
 
-        {/* Right Column - Edit Form */}
         <div className="profile-form-card">
           <div className="profile-form-header">
-            <h3>{isEditing ? 'Edit Profil' : 'Informasi Profil'}</h3>
+            <h3>{isEditing ? 'Edit Profil Tenaga Kesehatan' : 'Informasi Profil'}</h3>
             {!isEditing && (
               <button onClick={() => setIsEditing(true)} className="profile-edit-btn">
                 <Edit2 size={18} />
-                Edit Profile
+                Edit Profil
               </button>
             )}
           </div>
@@ -270,10 +325,49 @@ function Profile() {
               </div>
             </div>
 
+            <div className="form-row">
+              <div className="form-group">
+                <label>
+                  <Stethoscope size={16} />
+                  Profesi
+                </label>
+                <select
+                  name="profession"
+                  value={formData.profession}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className="form-select"
+                >
+                  <option value="">Pilih profesi</option>
+                  {professionOptions.map(prof => (
+                    <option key={prof} value={prof}>{prof}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label>
+                  <Award size={16} />
+                  Spesialisasi
+                </label>
+                <select
+                  name="specialization"
+                  value={formData.specialization}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className="form-select"
+                >
+                  <option value="">Pilih spesialisasi</option>
+                  {specializationOptions.map(spec => (
+                    <option key={spec} value={spec}>{spec}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
             <div className="form-group">
               <label>
                 <Code size={16} />
-                Skills (pisahkan dengan koma)
+                Keahlian (pisahkan dengan koma)
               </label>
               <input
                 type="text"
@@ -281,7 +375,25 @@ function Profile() {
                 value={formData.skills}
                 onChange={handleChange}
                 disabled={!isEditing}
-                placeholder="React, JavaScript, Node.js, CSS"
+                placeholder="Tambal Gigi, Cabut Gigi, Rontgen Gigi"
+              />
+              <small style={{ color: '#6B7280', fontSize: '0.8rem' }}>
+                Contoh: Tambal Gigi, Cabut Gigi, Rontgen Gigi, Konsultasi Pasien
+              </small>
+            </div>
+
+            <div className="form-group">
+              <label>
+                <Award size={16} />
+                Sertifikasi (pisahkan dengan koma)
+              </label>
+              <input
+                type="text"
+                name="certification"
+                value={formData.certification}
+                onChange={handleChange}
+                disabled={!isEditing}
+                placeholder="STR, SIP, BLS, ACLS"
               />
             </div>
 
@@ -345,18 +457,33 @@ function Profile() {
               </div>
               <div className="form-group">
                 <label>
-                  <LinkIcon size={16} />
-                  Portfolio
+                  <Award size={16} />
+                  Nomor STR/SIP
                 </label>
                 <input
-                  type="url"
-                  name="portfolio"
-                  value={formData.portfolio}
+                  type="text"
+                  name="license_number"
+                  value={formData.license_number}
                   onChange={handleChange}
                   disabled={!isEditing}
-                  placeholder="https://portfolio.com"
+                  placeholder="STR-12345"
                 />
               </div>
+            </div>
+
+            <div className="form-group">
+              <label>
+                <LinkIcon size={16} />
+                Portfolio / Website
+              </label>
+              <input
+                type="url"
+                name="portfolio"
+                value={formData.portfolio}
+                onChange={handleChange}
+                disabled={!isEditing}
+                placeholder="https://portfolio.com"
+              />
             </div>
 
             {isEditing && (
@@ -369,7 +496,7 @@ function Profile() {
                   {saving ? (
                     <>
                       <Loader size={18} className="spinning" />
-                      Saving...
+                      Menyimpan...
                     </>
                   ) : (
                     <>
@@ -392,7 +519,7 @@ function Profile() {
             {!isEditing && (
               <div className="profile-view-only">
                 <p className="profile-view-hint">
-                  💡 Klik tombol "Edit Profile" untuk mengubah informasi
+                  Klik tombol Edit Profil untuk mengubah informasi
                 </p>
               </div>
             )}
