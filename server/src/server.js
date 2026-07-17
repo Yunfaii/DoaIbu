@@ -23,16 +23,40 @@ app.use('/api/profile', profileRoutes);
 
 // Root route
 app.get('/', (req, res) => {
-  res.json({ message: 'Jalur Langit API is running' });
+  res.json({ 
+    message: 'Jalur Langit API is running',
+    endpoints: {
+      jobs: '/api/jobs',
+      jobDetail: '/api/jobs/:id',
+      search: '/api/jobs/search?q=',
+      apply: '/api/jobs/apply/:id',
+      match: '/api/jobs/match/:id',
+      login: '/api/auth/login',
+      register: '/api/auth/register',
+      profile: '/api/profile'
+    }
+  });
 });
 
 // Start server
 app.listen(port, () => {
-  console.log(`🚀 Jalur Langit Server running on http://localhost:${port}`);
-  console.log(`📋 API endpoints:`);
-  console.log(`   - GET  /api/jobs`);
-  console.log(`   - GET  /api/jobs/:id`);
-  console.log(`   - POST /api/auth/login`);
-  console.log(`   - POST /api/auth/register`);
-  console.log(`   - GET  /api/profile`);
+  console.log(`\n🚀 Jalur Langit Server running on http://localhost:${port}`);
+  console.log(`📋 API Endpoints:`);
+  console.log(`   ────────────────────────────────`);
+  console.log(`   📌 JOBS`);
+  console.log(`   ├─ GET    /api/jobs              - Get all jobs`);
+  console.log(`   ├─ GET    /api/jobs/:id          - Get job by ID`);
+  console.log(`   ├─ GET    /api/jobs/search?q=    - Search jobs`);
+  console.log(`   ├─ POST   /api/jobs/apply/:id    - Apply to job`);
+  console.log(`   └─ POST   /api/jobs/match/:id    - Get match score`);
+  console.log(`   ────────────────────────────────`);
+  console.log(`   🔐 AUTH`);
+  console.log(`   ├─ POST   /api/auth/login        - Login user`);
+  console.log(`   └─ POST   /api/auth/register     - Register user`);
+  console.log(`   ────────────────────────────────`);
+  console.log(`   👤 PROFILE`);
+  console.log(`   ├─ GET    /api/profile           - Get user profile`);
+  console.log(`   └─ PUT    /api/profile           - Update user profile`);
+  console.log(`   ────────────────────────────────`);
+  console.log(`✨ Server ready! Press Ctrl+C to stop\n`);
 });
