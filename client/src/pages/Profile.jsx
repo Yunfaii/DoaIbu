@@ -13,7 +13,7 @@ import axios from 'axios';
 const API_URL = 'http://localhost:5000/api/profile';
 
 function Profile() {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();  // ✅ Ambil updateUser
   const navigate = useNavigate();
   
   const [profile, setProfile] = useState(null);
@@ -79,8 +79,6 @@ function Profile() {
     'Yogyakarta',
     'Surabaya',
     'Bekasi',
-    'Tangerang',
-    'Remote'
   ];
 
   const educationOptions = [
@@ -154,11 +152,22 @@ function Profile() {
     setSuccess('');
 
     try {
+      const skillsArray = formData.skills.split(',').map(s => s.trim()).filter(s => s);
+      const certificationArray = formData.certification.split(',').map(s => s.trim()).filter(s => s);
+      
       const payload = {
         userId: user?.id,
-        ...formData,
-        skills: formData.skills.split(',').map(s => s.trim()).filter(s => s),
-        certification: formData.certification.split(',').map(s => s.trim()).filter(s => s)
+        name: formData.name,
+        email: formData.email,
+        profession: formData.profession,
+        specialization: formData.specialization,
+        skills: skillsArray,
+        certification: certificationArray,
+        experience: formData.experience,
+        location: formData.location,
+        education: formData.education,
+        license_number: formData.license_number,
+        portfolio: formData.portfolio
       };
       
       const response = await axios.put(API_URL, payload);
@@ -166,12 +175,19 @@ function Profile() {
       setSuccess('Profil berhasil diperbarui');
       setIsEditing(false);
       
-      const updatedUser = { 
-        ...user, 
-        ...payload,
-        id: user?.id
-      };
-      localStorage.setItem('user', JSON.stringify(updatedUser));
+      // ✅ UPDATE AUTH CONTEXT & LOCAL STORAGE
+      updateUser({
+        name: formData.name,
+        profession: formData.profession,
+        specialization: formData.specialization,
+        skills: skillsArray,
+        certification: certificationArray,
+        experience: formData.experience,
+        location: formData.location,
+        education: formData.education,
+        license_number: formData.license_number,
+        portfolio: formData.portfolio
+      });
       
     } catch (err) {
       setError(err.response?.data?.error || 'Gagal memperbarui profil');
@@ -375,10 +391,10 @@ function Profile() {
                 value={formData.skills}
                 onChange={handleChange}
                 disabled={!isEditing}
-                placeholder="Tambal Gigi, Cabut Gigi, Rontgen Gigi"
+                placeholder="Diagnosa, Pemeriksaan Fisik, Konsultasi Pasien"
               />
               <small style={{ color: '#6B7280', fontSize: '0.8rem' }}>
-                Contoh: Tambal Gigi, Cabut Gigi, Rontgen Gigi, Konsultasi Pasien
+                Contoh: Diagnosa, Pemeriksaan Fisik, Konsultasi Pasien
               </small>
             </div>
 

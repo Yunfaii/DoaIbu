@@ -36,5 +36,20 @@
     "portfolio": "https://port.com",
     "education": "S1 Gizi",
     "license_number": "STR-124"
+  },
+  {
+    "id": 1784286861425,
+    "name": "akbar",
+    "email": "a@g.com",
+    "password": "123456",
+    "profession": "Perawat",
+    "specialization": "Perawat ICU",
+    "skills": [],
+    "certification": [],
+    "experience": "3 tahun",
+    "location": "Jakarta Selatan",
+    "portfolio": "",
+    "education": "",
+    "license_number": ""
   }
 ]

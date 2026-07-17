@@ -25,6 +25,16 @@ function JobDetail() {
   const [isApplying, setIsApplying] = useState(false);
   const [error, setError] = useState('');
 
+  // ✅ Refresh user data from localStorage
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      const userData = JSON.parse(savedUser);
+      // Update user in AuthContext if needed
+      // This ensures we always have latest data
+    }
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       const jobData = await getJob(parseInt(id));
@@ -77,6 +87,9 @@ function JobDetail() {
       </div>
     );
   }
+
+  // ✅ Get latest user data from localStorage
+  const latestUser = JSON.parse(localStorage.getItem('user') || '{}');
 
   return (
     <motion.div 
@@ -182,7 +195,7 @@ function JobDetail() {
                 <ul className="facilities-list">
                   {job.facilities.map((facility, index) => (
                     <li key={index}>
-                      <CheckCircle size={16} color="#7C3AED" />
+                      <CheckCircle size={16} color="#10B981" />
                       {facility}
                     </li>
                   ))}
@@ -226,36 +239,37 @@ function JobDetail() {
             </p>
           </div>
 
+          {/* ✅ Use latestUser data */}
           <div className="job-detail-profile">
             <h4>Profil Tenaga Kesehatan Anda</h4>
             <div className="profile-snapshot">
               <div className="profile-item">
                 <span className="profile-label">Nama</span>
-                <span>{user?.name || 'Belum diisi'}</span>
+                <span>{latestUser?.name || 'Belum diisi'}</span>
               </div>
               <div className="profile-item">
                 <span className="profile-label">Email</span>
-                <span>{user?.email || 'Belum diisi'}</span>
+                <span>{latestUser?.email || 'Belum diisi'}</span>
               </div>
               <div className="profile-item">
                 <span className="profile-label">Profesi</span>
-                <span>{user?.profession || 'Belum diisi'}</span>
+                <span>{latestUser?.profession || 'Belum diisi'}</span>
               </div>
               <div className="profile-item">
                 <span className="profile-label">Spesialisasi</span>
-                <span>{user?.specialization || 'Belum diisi'}</span>
+                <span>{latestUser?.specialization || 'Belum diisi'}</span>
               </div>
               <div className="profile-item">
                 <span className="profile-label">Sertifikasi</span>
-                <span>{user?.certification?.join(', ') || 'Belum diisi'}</span>
+                <span>{latestUser?.certification?.join(', ') || 'Belum diisi'}</span>
               </div>
               <div className="profile-item">
                 <span className="profile-label">Pengalaman</span>
-                <span>{user?.experience || 'Belum diisi'}</span>
+                <span>{latestUser?.experience || 'Belum diisi'}</span>
               </div>
               <div className="profile-item">
                 <span className="profile-label">Lokasi</span>
-                <span>{user?.location || 'Belum diisi'}</span>
+                <span>{latestUser?.location || 'Belum diisi'}</span>
               </div>
               <Link to="/profile" className="profile-edit-link">
                 Edit Profil

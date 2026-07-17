@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Zap, Shield, Users } from 'lucide-react';
 import Button from '../components/common/Button';
+import logo from '../assets/logo1.png';
 
 function Home() {
   return (
@@ -38,9 +39,9 @@ function Home() {
         <div className="hero-image">
           <div className="hero-illustration">
             <img 
-              src="/src/assets/logo.png" 
+              src={logo} 
               alt="Jalur Langit Logo"
-              style={{ width: '120px', height: '120px', objectFit: 'contain' }}
+              className="hero-logo-image"
             />
           </div>
         </div>

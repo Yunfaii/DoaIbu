@@ -18,8 +18,19 @@ function JobFilter() {
     fetchJobs();
   };
 
-  const locationOptions = ['All', 'Jakarta', 'Bandung', 'Yogyakarta', 'Surabaya', 'Remote'];
-  const typeOptions = ['All', 'Full-time', 'Part-time', 'Internship', 'Freelance'];
+  const locationOptions = [
+  'All',
+  'Jakarta Pusat',
+  'Jakarta Timur',
+  'Jakarta Selatan',
+  'Jakarta Barat',
+  'Jakarta Utara',
+  'Bekasi',
+  'Bandung',
+  'Yogyakarta',
+  'Surabaya',
+];
+  const typeOptions = ['All', 'Full-time', 'Part-time', 'Internship'];
 
   return (
     <div className="job-filter">
@@ -70,7 +81,6 @@ function JobFilter() {
               const value = e.target.value;
               const newFilters = { type: value === 'All' ? '' : value };
               updateFilters(newFilters);
-              // ✅ FIX: Langsung search dengan filter baru
               searchJobs(filters.search || '');
             }}
           >

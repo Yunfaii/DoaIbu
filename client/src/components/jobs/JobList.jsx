@@ -14,7 +14,7 @@ function JobList({ jobs, loading, matchScores }) {
   if (!jobs || jobs.length === 0) {
     return (
       <div className="job-list-empty">
-        <p>😕 Tidak ada lowongan yang ditemukan</p>
+        <p>Maaf Tidak ada lowongan yang ditemukan</p>
         <p className="job-list-empty-sub">Coba ubah filter atau keyword pencarian</p>
       </div>
     );
