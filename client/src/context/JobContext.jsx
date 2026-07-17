@@ -83,10 +83,18 @@ export const JobProvider = ({ children }) => {
     }
   };
 
-  // Get match score
+  // ✅ FIX: Get match score dengan userId
   const getMatchScore = async (id) => {
     try {
-      const response = await axios.post(`${API_URL}/match/${id}`);
+      // Ambil userId dari localStorage
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const userId = user.id;
+      
+      const url = userId 
+        ? `${API_URL}/match/${id}?userId=${userId}` 
+        : `${API_URL}/match/${id}`;
+      
+      const response = await axios.post(url);
       return response.data;
     } catch (err) {
       console.error(err);

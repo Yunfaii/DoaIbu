@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Briefcase, User, LogOut, LogIn, UserPlus } from 'lucide-react';
+import { User, LogOut, LogIn, UserPlus, History } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import logo from '../../assets/logo2.png';
 
 function Navbar() {
   const { user, logout } = useAuth();
@@ -15,8 +16,11 @@ function Navbar() {
     <nav className="navbar">
       <div className="navbar-container">
         <Link to="/" className="navbar-brand">
-          <Briefcase size={28} color="#7C3AED" />
-          <span>Jalur Langit</span>
+          <img 
+            src={logo} 
+            alt="Jalur Langit" 
+            className="navbar-logo"
+          />
         </Link>
 
         <div className="navbar-links">

@@ -55,6 +55,13 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // ✅ NEW: Update user data after profile edit
+  const updateUser = (updatedData) => {
+    const updatedUser = { ...user, ...updatedData };
+    setUser(updatedUser);
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
@@ -64,6 +71,7 @@ export const AuthProvider = ({ children }) => {
     user,
     login,
     register,
+    updateUser,  // ✅ NEW
     logout,
     loading
   };

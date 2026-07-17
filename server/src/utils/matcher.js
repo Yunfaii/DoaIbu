@@ -1,71 +1,119 @@
-// Calculate match score between healthcare professional and job
+// Calculate match score between user (tenaga kesehatan) and job
 exports.calculateMatchScore = (user, job) => {
   let totalScore = 0;
   let maxScore = 0;
 
-  // 1. SKILLS MATCH (30% weight)
-  const skillsWeight = 30;
-  if (user.skills && job.skills) {
-    const matchedSkills = job.skills.filter(jobSkill =>
-      user.skills.some(userSkill =>
-        userSkill.toLowerCase() === jobSkill.toLowerCase() ||
-        userSkill.toLowerCase().includes(jobSkill.toLowerCase()) ||
-        jobSkill.toLowerCase().includes(userSkill.toLowerCase())
-      )
-    );
-    const skillsScore = (matchedSkills.length / job.skills.length) * skillsWeight;
-    totalScore += skillsScore;
-    maxScore += skillsWeight;
-  }
-
-  // 2. CERTIFICATION MATCH (25% weight) - NEW FOR HEALTHCARE
-  const certWeight = 25;
-  if (user.certification && job.certification) {
-    const matchedCerts = job.certification.filter(jobCert =>
-      user.certification.some(userCert =>
-        userCert.toLowerCase() === jobCert.toLowerCase() ||
-        userCert.toLowerCase().includes(jobCert.toLowerCase()) ||
-        jobCert.toLowerCase().includes(userCert.toLowerCase())
-      )
-    );
-    const certScore = (matchedCerts.length / job.certification.length) * certWeight;
-    totalScore += certScore;
-    maxScore += certWeight;
+  // 1. PROFESSION MATCH (30%)
+  const profWeight = 30;
+  if (user.profession && job.category) {
+    const userProf = user.profession.toLowerCase().trim();
+    const jobCat = job.category.toLowerCase().trim();
+    
+    // Mapping profesi ke category
+    const professionMap = {
+      'dokter': ['doctor', 'dokter', 'dokter spesialis'],
+      'dokter spesialis': ['doctor', 'dokter spesialis', 'dokter'],
+      'perawat': ['nurse', 'perawat'],
+      'bidan': ['midwife', 'bidan'],
+      'apoteker': ['pharmacist', 'apoteker'],
+      'analis kesehatan': ['laboratory', 'analis kesehatan', 'tenaga laboratorium'],
+      'tenaga laboratorium medis': ['laboratory', 'analis kesehatan', 'tenaga laboratorium'],
+      'ahli gizi': ['nutritionist', 'ahli gizi'],
+      'fisioterapis': ['physiotherapist', 'fisioterapis'],
+      'radiografer': ['radiographer', 'radiografer'],
+      'tenaga kesehatan masyarakat': ['public health', 'kesehatan masyarakat']
+    };
+    
+    // Cek apakah profesi user cocok dengan category job
+    const userProfLower = userProf.toLowerCase();
+    const jobCatLower = jobCat.toLowerCase();
+    
+    // Exact match
+    if (userProfLower === jobCatLower) {
+      totalScore += profWeight;
+    } 
+    // Check mapping
+    else if (professionMap[userProfLower] && professionMap[userProfLower].some(cat => jobCatLower.includes(cat) || cat.includes(jobCatLower))) {
+      totalScore += profWeight * 0.9;
+    }
+    // Partial match (misal: dokter vs dokter spesialis)
+    else if (userProfLower.includes('dokter') && jobCatLower.includes('dokter')) {
+      totalScore += profWeight * 0.8;
+    }
+    else if (userProfLower.includes('perawat') && jobCatLower.includes('perawat')) {
+      totalScore += profWeight * 0.8;
+    }
+    else {
+      totalScore += profWeight * 0.2;
+    }
+    maxScore += profWeight;
   } else {
-    // If job requires certification but user has none
-    if (job.certification && job.certification.length > 0) {
-      totalScore += 0;
-      maxScore += certWeight;
-    } else {
-      totalScore += certWeight * 0.5;
-      maxScore += certWeight;
-    }
+    totalScore += profWeight * 0.3;
+    maxScore += profWeight;
   }
 
-  // 3. SPECIALIZATION MATCH (20% weight) - NEW FOR HEALTHCARE
-  const specWeight = 20;
+  // 2. SPECIALIZATION MATCH (30%)
+  const specWeight = 30;
   if (user.specialization && job.specialization) {
-    if (user.specialization.toLowerCase() === job.specialization.toLowerCase()) {
+    const userSpec = user.specialization.toLowerCase().trim();
+    const jobSpec = job.specialization.toLowerCase().trim();
+    
+    // Exact match
+    if (userSpec === jobSpec) {
       totalScore += specWeight;
-    } else if (
-      user.specialization.toLowerCase().includes(job.specialization.toLowerCase()) ||
-      job.specialization.toLowerCase().includes(user.specialization.toLowerCase())
-    ) {
+    } 
+    // Partial match
+    else if (userSpec.includes(jobSpec) || jobSpec.includes(userSpec)) {
       totalScore += specWeight * 0.7;
-    } else {
-      totalScore += specWeight * 0.3;
     }
+    // Similar specialization (misal: dokter umum vs general practitioner)
+    else {
+      const specKeywords = {
+        'umum': ['general', 'general practitioner', 'umum'],
+        'anak': ['pediatrics', 'paediatrics', 'anak'],
+        'kandungan': ['obstetrics', 'gynecology', 'obsgyn', 'kandungan'],
+        'bedah': ['surgery', 'surgeon', 'bedah'],
+        'kulit': ['dermatology', 'skin', 'kulit'],
+        'jantung': ['cardiology', 'heart', 'jantung'],
+        'saraf': ['neurology', 'neurosurgery', 'saraf'],
+        'mata': ['ophthalmology', 'eye', 'mata'],
+        'tht': ['ent', 'ear', 'nose', 'throat', 'tht'],
+        'icu': ['critical care', 'intensive care', 'icu'],
+        'gigi': ['dentistry', 'dental', 'gigi'],
+        'klinis': ['clinical', 'klinis'],
+        'farmasi': ['pharmacy', 'farmasi']
+      };
+      
+      let matched = false;
+      for (const [key, values] of Object.entries(specKeywords)) {
+        if ((userSpec.includes(key) || values.some(v => userSpec.includes(v))) &&
+            (jobSpec.includes(key) || values.some(v => jobSpec.includes(v)))) {
+          totalScore += specWeight * 0.6;
+          matched = true;
+          break;
+        }
+      }
+      
+      if (!matched) {
+        totalScore += specWeight * 0.2;
+      }
+    }
+    maxScore += specWeight;
+  } else if (user.specialization && !job.specialization) {
+    // User punya spesialisasi tapi job tidak butuh spesialisasi
+    totalScore += specWeight * 0.5;
     maxScore += specWeight;
   } else {
     totalScore += specWeight * 0.3;
     maxScore += specWeight;
   }
 
-  // 4. EXPERIENCE MATCH (15% weight)
-  const expWeight = 15;
+  // 3. EXPERIENCE MATCH (20%)
+  const expWeight = 20;
   if (user.experience && job.experience) {
-    const userYears = parseInt(user.experience) || 0;
-    const jobYears = parseInt(job.experience) || 0;
+    const userYears = parseExperience(user.experience);
+    const jobYears = parseExperience(job.experience);
+    
     let expScore = 0;
     if (userYears >= jobYears) {
       expScore = expWeight;
@@ -78,28 +126,71 @@ exports.calculateMatchScore = (user, job) => {
     }
     totalScore += expScore;
     maxScore += expWeight;
-  } else {
+  } else if (user.experience && !job.experience) {
     totalScore += expWeight * 0.5;
+    maxScore += expWeight;
+  } else {
+    totalScore += expWeight * 0.3;
     maxScore += expWeight;
   }
 
-  // 5. LOCATION MATCH (10% weight)
-  const locWeight = 10;
+  // 4. LOCATION MATCH (20%)
+  const locWeight = 20;
   if (user.location && job.location) {
-    if (user.location.toLowerCase() === job.location.toLowerCase()) {
+    const userLoc = user.location.toLowerCase().trim();
+    const jobLoc = job.location.toLowerCase().trim();
+    
+    // Exact match
+    if (userLoc === jobLoc) {
       totalScore += locWeight;
-    } else if (user.location.toLowerCase().includes(job.location.toLowerCase()) ||
-               job.location.toLowerCase().includes(user.location.toLowerCase())) {
-      totalScore += locWeight * 0.6;
-    } else {
-      totalScore += locWeight * 0.2;
+    } 
+    // Same city (Jakarta Pusat vs Jakarta Selatan)
+    else if (userLoc.includes('jakarta') && jobLoc.includes('jakarta')) {
+      totalScore += locWeight * 0.8;
+    }
+    // Remote job - user bisa dari mana saja
+    else if (jobLoc === 'remote') {
+      totalScore += locWeight * 0.9;
+    }
+    else {
+      totalScore += locWeight * 0.3;
     }
     maxScore += locWeight;
   } else {
-    totalScore += locWeight * 0.5;
+    totalScore += locWeight * 0.3;
     maxScore += locWeight;
   }
 
   // Calculate final percentage
   return Math.round((totalScore / maxScore) * 100);
 };
+
+// Helper function to parse experience string to years
+function parseExperience(expStr) {
+  if (!expStr) return 0;
+  
+  const str = expStr.toLowerCase().trim();
+  
+  // Handle specific formats
+  if (str.includes('kurang dari 1 tahun') || str.includes('<1')) return 0.5;
+  if (str.includes('1 tahun') || str.includes('1 year')) return 1;
+  if (str.includes('2 tahun') || str.includes('2 years')) return 2;
+  if (str.includes('3 tahun') || str.includes('3 years')) return 3;
+  if (str.includes('4 tahun') || str.includes('4 years')) return 4;
+  if (str.includes('5 tahun') || str.includes('5 years')) return 5;
+  if (str.includes('lebih dari 5 tahun') || str.includes('>5')) return 6;
+  
+  // Handle range format: "2-5 years"
+  const rangeMatch = str.match(/(\d+)\s*-\s*(\d+)/);
+  if (rangeMatch) {
+    return (parseInt(rangeMatch[1]) + parseInt(rangeMatch[2])) / 2;
+  }
+  
+  // Try to extract number
+  const numbers = str.match(/\d+/);
+  if (numbers) {
+    return parseInt(numbers[0]);
+  }
+  
+  return 0;
+}
