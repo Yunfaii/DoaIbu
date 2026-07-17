@@ -3,7 +3,7 @@ import { Search, X, MapPin, Briefcase } from 'lucide-react';
 import { useJobs } from '../../context/JobContext';
 
 function JobFilter() {
-  const { filters, updateFilters, searchJobs, clearFilters } = useJobs();
+  const { filters, updateFilters, searchJobs, clearFilters, fetchJobs } = useJobs();
   const [searchInput, setSearchInput] = useState(filters.search || '');
 
   const handleSearch = (e) => {
@@ -15,7 +15,7 @@ function JobFilter() {
   const handleClear = () => {
     setSearchInput('');
     clearFilters();
-    searchJobs('');
+    fetchJobs();
   };
 
   const locationOptions = ['All', 'Jakarta', 'Bandung', 'Yogyakarta', 'Surabaya', 'Remote'];
@@ -50,7 +50,9 @@ function JobFilter() {
             value={filters.location || ''}
             onChange={(e) => {
               const value = e.target.value;
-              updateFilters({ location: value === 'All' ? '' : value });
+              const newFilters = { location: value === 'All' ? '' : value };
+              updateFilters(newFilters);
+              searchJobs(filters.search || '');
             }}
           >
             {locationOptions.map(loc => (
@@ -66,7 +68,10 @@ function JobFilter() {
             value={filters.type || ''}
             onChange={(e) => {
               const value = e.target.value;
-              updateFilters({ type: value === 'All' ? '' : value });
+              const newFilters = { type: value === 'All' ? '' : value };
+              updateFilters(newFilters);
+              // ✅ FIX: Langsung search dengan filter baru
+              searchJobs(filters.search || '');
             }}
           >
             {typeOptions.map(type => (
