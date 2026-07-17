@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "name": "akbar",
+    "name": "User",
     "email": "user@email.com",
     "password": "password123",
     "skills": [
@@ -10,10 +10,10 @@
       "Node.js",
       "CSS"
     ],
-    "experience": "0 years",
-    "location": "Jambi",
-    "portfolio": "https://akbar.com",
-    "education": "S1 Teknik Mesin"
+    "experience": "2 years",
+    "location": "Jakarta",
+    "portfolio": "https://portfolio.com",
+    "education": "S1 Computer Science"
   },
   {
     "id": 2,
@@ -31,14 +31,17 @@
     "education": "S1 Mathematics"
   },
   {
-    "id": 1784277709073,
-    "name": "akbar",
-    "email": "akbar@gami.com",
+    "id": 1784280437361,
+    "name": "fran",
+    "email": "fran@enak.com",
     "password": "123456",
-    "skills": [],
-    "experience": "0 years",
-    "location": "",
+    "skills": [
+      "JavaScript",
+      "TypeScript"
+    ],
+    "experience": "<1 year",
+    "location": "Tangerang",
     "portfolio": "",
-    "education": ""
+    "education": "High School"
   }
 ]

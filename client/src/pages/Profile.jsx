@@ -23,7 +23,45 @@ function Profile() {
   const [success, setSuccess] = useState('');
   const [isEditing, setIsEditing] = useState(false);
 
-  // Form state
+  // Dropdown options
+  const experienceOptions = [
+    '<1 year',
+    '1 year',
+    '2 years',
+    '3 years',
+    '4 years',
+    '5+ years'
+  ];
+
+  const locationOptions = [
+    'Jakarta',
+    'Bandung',
+    'Yogyakarta',
+    'Surabaya',
+    'Bekasi',
+    'Tangerang',
+    'Remote',
+    'Other'
+  ];
+
+  const educationOptions = [
+    'S1 Computer Science',
+    'S1 Information Systems',
+    'S1 Mathematics',
+    'S1 Teknik Mesin',
+    'S1 Teknik Elektro',
+    'S1 Teknik Informatika',
+    'S1 Sistem Informasi',
+    'S1 Manajemen',
+    'S1 Ekonomi',
+    'S2 Computer Science',
+    'S2 Business Administration',
+    'D3 Computer Science',
+    'D3 Information Technology',
+    'High School',
+    'Other'
+  ];
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -38,7 +76,9 @@ function Profile() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await axios.get(API_URL);
+        // Send user ID if available
+        const url = user?.id ? `${API_URL}?userId=${user.id}` : API_URL;
+        const response = await axios.get(url);
         const data = response.data;
         setProfile(data);
         setFormData({
@@ -58,7 +98,7 @@ function Profile() {
       }
     };
     fetchProfile();
-  }, []);
+  }, [user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -73,6 +113,7 @@ function Profile() {
 
     try {
       const payload = {
+        userId: user?.id, // Send user ID
         ...formData,
         skills: formData.skills.split(',').map(s => s.trim()).filter(s => s)
       };
@@ -82,8 +123,12 @@ function Profile() {
       setSuccess('Profile updated successfully!');
       setIsEditing(false);
       
-      // Update auth context
-      const updatedUser = { ...user, ...payload };
+      // Update auth context with new user data
+      const updatedUser = { 
+        ...user, 
+        ...payload,
+        id: user?.id // Preserve user ID
+      };
       localStorage.setItem('user', JSON.stringify(updatedUser));
       
     } catch (err) {
@@ -218,9 +263,9 @@ function Profile() {
                   type="email"
                   name="email"
                   value={formData.email}
-                  onChange={handleChange}
                   disabled={true}
                   placeholder="Email"
+                  style={{ background: '#f3f4f6', cursor: 'not-allowed' }}
                 />
               </div>
             </div>
@@ -246,28 +291,36 @@ function Profile() {
                   <Briefcase size={16} />
                   Pengalaman
                 </label>
-                <input
-                  type="text"
+                <select
                   name="experience"
                   value={formData.experience}
                   onChange={handleChange}
                   disabled={!isEditing}
-                  placeholder="2 years, 3 years, etc."
-                />
+                  className="form-select"
+                >
+                  <option value="">Pilih pengalaman</option>
+                  {experienceOptions.map(exp => (
+                    <option key={exp} value={exp}>{exp}</option>
+                  ))}
+                </select>
               </div>
               <div className="form-group">
                 <label>
                   <MapPin size={16} />
                   Lokasi
                 </label>
-                <input
-                  type="text"
+                <select
                   name="location"
                   value={formData.location}
                   onChange={handleChange}
                   disabled={!isEditing}
-                  placeholder="Jakarta, Bandung, Remote"
-                />
+                  className="form-select"
+                >
+                  <option value="">Pilih lokasi</option>
+                  {locationOptions.map(loc => (
+                    <option key={loc} value={loc}>{loc}</option>
+                  ))}
+                </select>
               </div>
             </div>
 
@@ -277,14 +330,18 @@ function Profile() {
                   <GraduationCap size={16} />
                   Pendidikan
                 </label>
-                <input
-                  type="text"
+                <select
                   name="education"
                   value={formData.education}
                   onChange={handleChange}
                   disabled={!isEditing}
-                  placeholder="S1 Computer Science, etc."
-                />
+                  className="form-select"
+                >
+                  <option value="">Pilih pendidikan</option>
+                  {educationOptions.map(edu => (
+                    <option key={edu} value={edu}>{edu}</option>
+                  ))}
+                </select>
               </div>
               <div className="form-group">
                 <label>
