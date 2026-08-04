@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Jalur Langit is a smart job discovery and application platform designed specifically for healthcare professionals in Indonesia. The platform helps medical graduates and healthcare workers find suitable job opportunities through intelligent matching and automated application features.
+Jalur Langit is a smart placement discovery and application platform designed specifically for undergraduate medical students in Indonesia. The platform helps medical students find suitable clinical clerkship (co-ass) and internship opportunities through intelligent matching and automated application features.
 
 Developed as part of the Garuda Hacks 7.0 Competition at Universitas Multimedia Nusantara (UMN).
 
